@@ -46,7 +46,16 @@ export type SimplifiedItem = {
   readingTime: number
   previewPicture: string | null
   annotations: WallabagAnnotation[]
+
+  showDomainName: boolean
+  showPublishedBy: boolean
+  showSavedAt: boolean
+  showPublishedAt: boolean
+  showIsArchived: boolean
+  showReadingTime: boolean
 }
+
+
 
 const startSyncJob = () => {
   const settings = logseq.settings as Settings
@@ -253,6 +262,13 @@ const fetchArticles = async (inBackground = false) => {
           previewPicture: article.preview_picture || '',
           annotations: article.annotations,
           id: article.id,
+
+          showDomainName: settings.showDomainName,
+          showPublishedBy: settings.showPublishedBy,
+          showSavedAt: settings.showSavedAt,
+          showPublishedAt: settings.showPublishedAt,
+          showIsArchived: settings.showIsArchived,
+          showReadingTime: settings.showReadingTime
         }
 
         const renderedItem = renderItem(
@@ -263,19 +279,13 @@ const fetchArticles = async (inBackground = false) => {
         if (existingBlock) {
           console.debug('existing block found, updating', existingBlock.uuid)
           // Update existing block if properties have changed
+          // TODO: Also update if properties stayed the same but we changed the properties to display
           const existingProperties = existingBlock.properties
-          const newProperties = {
-            'id-wallabag': processedArticle.wallabagId,
-            site: processedArticle.domainName,
-            publishedBy: processedArticle.publishedBy,
-            'date-saved': processedArticle.savedAtFormatted,
-          }
+          const newProperties = {}
 
-          if (isBlockPropertiesChanged(newProperties, existingProperties)) {
+          if (isBlockPropertiesChanged(newProperties, existingProperties) || settings.propertiesToDisplayChanged) {
             // Combine the rendered content with explicit properties
-            await logseq.Editor.updateBlock(existingBlock.uuid, renderedItem, {
-              properties: newProperties,
-            })
+            await logseq.Editor.updateBlock(existingBlock.uuid, renderedItem)
           }
         } else {
           console.debug('no existing block found, creating new')
@@ -313,13 +323,6 @@ const fetchArticles = async (inBackground = false) => {
           itemBatchBlocks.unshift({
             content: renderedItem,
             children,
-            properties: {
-              'id-wallabag': article.id,
-              collapsed: true,
-              site: processedArticle.domainName,
-              author: processedArticle.publishedBy,
-              'date-saved': processedArticle.savedAtFormatted,
-            },
           })
 
           itemBatchBlocksMap.set(targetBlockId, itemBatchBlocks)
@@ -340,6 +343,7 @@ const fetchArticles = async (inBackground = false) => {
 
     console.debug(`Finished processing ${totalArticles} articles`)
     logseq.updateSettings({ syncAt: DateTime.local().toFormat(DATE_FORMAT) })
+    logseq.updateSettings({propertiesToDisplayChanged: false})
   } catch (e) {
     console.error('Error in fetchArticles:', e)
     !inBackground &&
@@ -429,6 +433,14 @@ const main = async (baseInfo: LSPluginBaseInfo) => {
       logseq.updateSettings({ syncJobId: 0 })
       newFrequency > 0 && startSyncJob()
     }
+    if(newSettings.showDomainName != oldSettings.showDomainName ||
+      newSettings.showIsArchived != oldSettings.showIsArchived ||
+      newSettings.showPublishedAt != oldSettings.showPublishedAt ||
+      newSettings.showPublishedBy != oldSettings.showPublishedBy ||
+      newSettings.showReadingTime != oldSettings.showReadingTime ||
+      newSettings.showSavedAt != oldSettings.showSavedAt) {
+        logseq.updateSettings({propertiesToDisplayChanged: true})
+      }
   })
 
   logseq.provideModel({

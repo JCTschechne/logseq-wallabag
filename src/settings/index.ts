@@ -26,6 +26,15 @@ export interface Settings {
   expireDate?: number
   apiVersion?: string
   isTokenExpired?: boolean
+
+  // Properties to display
+  propertiesToDisplayChanged: boolean
+  showDomainName: boolean
+  showPublishedBy: boolean
+  showSavedAt: boolean
+  showPublishedAt: boolean
+  showIsArchived: boolean
+  showReadingTime: boolean
 }
 
 export const settingsSchema = async (): Promise<SettingSchemaDesc[]> => [
@@ -112,4 +121,65 @@ export const settingsSchema = async (): Promise<SettingSchemaDesc[]> => [
     description: t('This page will be created if it does not exist.'),
     default: 'Wallabag',
   },
+  {
+  key: 'displayPropertiesOption',
+  type: 'heading',
+  title: t('Display Properties Settings'),
+  default: '',
+  description: 'You can select what information you want to display in the properties block. The wallabag id is not selectable, it is required by the plugin to work.',
+  },
+  {
+    key: 'showDomainName',
+    type: 'boolean',
+    title: t(''),
+    description: t(
+      'Domain name'
+    ),
+    default: false,
+  },
+  {
+    key: 'showPublishedBy',
+    type: 'boolean',
+    title: t(''),
+    description: t(
+      'Author'
+    ),
+    default: false,
+  },
+  {
+    key: 'showSavedAt',
+    type: 'boolean',
+    title: t(''),
+    description: t(
+      'Date of archivation'
+    ),
+    default: false,
+  },
+  {
+    key: 'showPublishedAt',
+    type: 'boolean',
+    title: t(''),
+    description: t(
+      'Date of publiction'
+    ),
+    default: false,
+  },
+  {
+    key: 'showIsArchived',
+    type: 'boolean',
+    title: t(''),
+    description: t(
+      'Is archived'
+    ),
+    default: false,
+  },
+  {
+    key: 'showReadingTime',
+    type: 'boolean',
+    title: t(''),
+    description: t(
+      'Reading time'
+    ),
+    default: false,
+  }
 ]

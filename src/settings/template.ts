@@ -32,12 +32,28 @@ export const defaultHighlightTemplate = `> {{{text}}} [⤴️]({{{highlightUrl}}
 
 {{#note.length}}note:: {{{note}}}{{/note.length}}`
 
+
 export const defaultArticleTemplate = `[{{{title}}}]({{{originalArticleUrl}}})
+{{#showDomainName}}
 site:: [{{{domainName}}}]({{{domainName}}})
+{{/showDomainName}}
+{{#showPublishedBy}}
 author:: {{{publishedBy}}}
-date-saved:: {{savedAtFormatted}}
-published-at:: {{publishedAtFormatted}}
+{{/showPublishedBy}}
+{{#showSavedAt}}
+saved:: {{savedAtFormatted}}
+{{/showSavedAt}}
+{{#showPublishedAt}}
+published:: {{publishedAtFormatted}}
+{{/showPublishedAt}}
+{{#showIsArchived}}
+is-archived:: {{isArchived}}
+{{/showIsArchived}}
+{{#showReadingTime}}
+reading-time:: {{readingTime}}
+{{/showReadingTime}}
 id-wallabag:: {{{id}}}`
+
 
 function lowerCase() {
   return function (text: string, render: (text: string) => string) {
