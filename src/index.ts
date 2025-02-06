@@ -35,6 +35,7 @@ export type SimplifiedItem = {
   title: string
   domainName: string | null
   originalArticleUrl: string | null
+  wallabagArticleUrl: string | null
   publishedBy: string | null
   publishedAt: Date | null
   savedAt: Date
@@ -248,6 +249,7 @@ const fetchArticles = async (inBackground = false) => {
           content: article.content || '',
           domainName: article.domain_name || '',
           originalArticleUrl: article.given_url || article.url || '',
+          wallabagArticleUrl: settings.wallabagUrl + "/view/" + article.id,
           wallabagId: article.id,
           savedAt,
           publishedAt,
@@ -269,6 +271,10 @@ const fetchArticles = async (inBackground = false) => {
           showPublishedAt: settings.showPublishedAt,
           showIsArchived: settings.showIsArchived,
           showReadingTime: settings.showReadingTime
+        }
+
+        if(article.id == 1){
+          console.debug("Sample simplified article", processedArticle)
         }
 
         const renderedItem = renderItem(

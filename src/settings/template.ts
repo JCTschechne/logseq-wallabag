@@ -33,7 +33,7 @@ export const defaultHighlightTemplate = `> {{{text}}} [⤴️]({{{highlightUrl}}
 {{#note.length}}note:: {{{note}}}{{/note.length}}`
 
 
-export const defaultArticleTemplate = `[{{{title}}}]({{{originalArticleUrl}}})
+export const defaultArticleTemplate = `[{{{title}}}]({{{wallabagArticleUrl}}})
 {{#showDomainName}}
 site:: [{{{domainName}}}]({{{domainName}}})
 {{/showDomainName}}
